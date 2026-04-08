@@ -3,10 +3,11 @@
 
 
 xG = 1.77
-xGA = 0
+xGA = 0.99
 
 results = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
 
+# Functions to normalize all the relevant metrics
 def normalized_current_form(results):
     last_5 = results[-5:]
     form = list(last_5)
@@ -22,10 +23,14 @@ def normalized_current_form(results):
 
 def normalized_xG(xG):
     return xG/2
-    
+
+def normalized_xGA(xGA):
+    return (2-xGA)/2
+
 weighted_xG = normalized_xG(xG)*0.30 # 30%
 weighted_current_form = normalized_current_form(results)*0.15 #15%
+weighted_xGA = normalized_xGA(xGA)*0.25 # 25%
 
-print(weighted_xG)
-print(weighted_current_form)
-weighted_xGA = xGA * 0.25 # 25%
+print(f"xG: {weighted_xG}")
+print(f"Current form: {weighted_current_form}")
+print(f"xGA: {weighted_xGA}")
