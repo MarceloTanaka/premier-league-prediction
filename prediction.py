@@ -6,6 +6,15 @@ xGA = 0.99
 results = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
 head_to_head = [True, True, True, True, True, True]
 
+home_performance = {"Wins": 10, 
+                    "Draws": 7,
+                    "Loses": 2}
+
+away_performance = {"Wins": 8,
+                    "Draws": 5,
+                    "Loses": 6}
+
+
 # Functions to normalize all the relevant metrics
 def normalized_current_form(results):
     last_5 = results[-5:]
@@ -39,6 +48,12 @@ def normalized_head_to_head(head_to_head):
     max_points = len(head_to_head) * 3
     return history/max_points
 
+def normalized_score_home(home_performance):
+    win_points = home_performance["Wins"] * 3
+    draw_points = home_performance["Draws"] * 1
+    total_possible_points = (home_performance["Wins"] + home_performance["Draws"] + home_performance["Loses"])*3
+    total_obtained_points = win_points + draw_points
+    return total_obtained_points/total_possible_points
 
 # Applying weight to each normalized metric
 weighted_xG = normalized_xG(xG)*0.30 # 30%
