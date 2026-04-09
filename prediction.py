@@ -48,10 +48,20 @@ def normalized_head_to_head(head_to_head):
     max_points = len(head_to_head) * 3
     return history/max_points
 
+#---------------------------------------------------------------------------------------------------------------
+# Possible Improvement: Use only one function to measure home/away strength
+#---------------------------------------------------------------------------------------------------------------
 def normalized_score_home(home_performance):
     win_points = home_performance["Wins"] * 3
     draw_points = home_performance["Draws"] * 1
     total_possible_points = (home_performance["Wins"] + home_performance["Draws"] + home_performance["Loses"])*3
+    total_obtained_points = win_points + draw_points
+    return total_obtained_points/total_possible_points
+
+def normalized_score_away(away_performance):
+    win_points = away_performance["Wins"] * 3
+    draw_points = away_performance["Draws"] * 1
+    total_possible_points = (away_performance["Wins"] + away_performance["Draws"] + away_performance["Loses"])*3
     total_obtained_points = win_points + draw_points
     return total_obtained_points/total_possible_points
 
@@ -60,6 +70,11 @@ weighted_xG = normalized_xG(xG)*0.30 # 30%
 weighted_current_form = normalized_current_form(results)*0.15 # 15%
 weighted_xGA = normalized_xGA(xGA)*0.30 # 30%
 weighted_head_to_head = normalized_head_to_head(head_to_head)*0.05 # 5%
+# -------------------------------------------------------------------------------------
+# CHECK IF IT IS POSSIBLE TO INTEGRATE THIS TWO INTO ONE METRIC USING IF STATEMENTS
+#-------------------------------------------------------------------------------------
+weighted_home_strength = normalized_score_home(home_performance)*0.2 #20%
+weighted_away_strength = normalized_score_away(away_performance)*0.2 # 20%
 
 print(f"xG: {weighted_xG}")
 print(f"Current form: {weighted_current_form}")
