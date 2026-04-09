@@ -57,17 +57,16 @@ def normalized_score(performance):
     total_obtained_points = win_points + draw_points
     return total_obtained_points/total_possible_points
 
+# Applying weight to each normalized metric and calculating the team's score
+def team_score(xG, xGA, results, head_to_head, home_performance, away_performance):
+    weighted_xG = normalized_xG(xG)*0.30 # 30%
+    weighted_current_form = normalized_current_form(results)*0.15 # 15%
+    weighted_xGA = normalized_xGA(xGA)*0.30 # 30%
+    weighted_head_to_head = normalized_head_to_head(head_to_head)*0.05 # 5%
+    if team_is_home:
+        weighted_strength = normalized_score(home_performance)*0.2 # 20%
+    else:
+        weighted_strength = normalized_score(away_performance)*0.2 # 20%
 
-# Applying weight to each normalized metric
-weighted_xG = normalized_xG(xG)*0.30 # 30%
-weighted_current_form = normalized_current_form(results)*0.15 # 15%
-weighted_xGA = normalized_xGA(xGA)*0.30 # 30%
-weighted_head_to_head = normalized_head_to_head(head_to_head)*0.05 # 5%
-if team_is_home:
-    weighted_strength = normalized_score(home_performance)*0.2 # 20%
-else:
-    weighted_strength = normalized_score(away_performance)*0.2 # 20%
+    return sum([weighted_xGA, weighted_current_form, weighted_xG, weighted_strength])
 
-
-# Calculate a team's score based on the metrics
-team1_score = sum([weighted_xGA, weighted_current_form, weighted_xG, weighted_strength])
