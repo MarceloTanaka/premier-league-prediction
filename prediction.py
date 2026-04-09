@@ -1,20 +1,37 @@
 # Statistics to use: 
 # xG(30%), xGA(30%), last 6 head-to-head(5%), current form (last 5 games)(15%), home/away strength(20%)
 
-xG = 1.77
-xGA = 0.99
-results = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
-head_to_head = [True, True, True, True, True, True]
+# Metrics team 1
+xG_1 = 1.77
+xGA_1 = 0.99
+results_1 = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
+head_to_head_1 = [True, True, True, True, True, True]
 
-home_performance = {"Wins": 10, 
+home_performance_1 = {"Wins": 10, 
                     "Draws": 7,
                     "Loses": 2}
 
-away_performance = {"Wins": 8,
+away_performance_1 = {"Wins": 8,
                     "Draws": 5,
                     "Loses": 6}
 
-team_is_home = True
+team_is_home_1 = True
+
+# Metrics team 2
+xG_2 = 1.77
+xGA_2 = 0.99
+results_2 = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
+head_to_head_2 = [True, True, True, True, True, True]
+
+home_performance_2 = {"Wins": 10, 
+                    "Draws": 7,
+                    "Loses": 2}
+
+away_performance_2 = {"Wins": 8,
+                    "Draws": 5,
+                    "Loses": 6}
+
+team_is_home_2 = False
 
 
 # Functions to normalize all the relevant metrics
@@ -58,7 +75,7 @@ def normalized_score(performance):
     return total_obtained_points/total_possible_points
 
 # Applying weight to each normalized metric and calculating the team's score
-def team_score(xG, xGA, results, head_to_head, home_performance, away_performance):
+def team_score(xG, xGA, results, head_to_head, home_performance, away_performance, team_is_home):
     weighted_xG = normalized_xG(xG)*0.30 # 30%
     weighted_current_form = normalized_current_form(results)*0.15 # 15%
     weighted_xGA = normalized_xGA(xGA)*0.30 # 30%
@@ -68,5 +85,19 @@ def team_score(xG, xGA, results, head_to_head, home_performance, away_performanc
     else:
         weighted_strength = normalized_score(away_performance)*0.2 # 20%
 
-    return sum([weighted_xGA, weighted_current_form, weighted_xG, weighted_strength])
+    return sum([weighted_xGA, weighted_current_form, weighted_xG, weighted_strength, weighted_head_to_head])
+
+# Calculating each team's score and giving each a probability of winning
+team1_score = team_score(xG_1, xGA_1, results_1, head_to_head_1, home_performance_1, away_performance_1, team_is_home_1)
+team2_score = team_score(xG_2, xGA_2, results_2, head_to_head_2, home_performance_2, away_performance_2, team_is_home_2)
+
+def winning_probability(team1_score, team2_score):
+    probability_team1 = team1_score/(team1_score + team2_score) * 100
+    probability_team2 = (1 - probability_team1) * 100
+    return probability_team1, probability_team2
+
+
+
+
+
 
