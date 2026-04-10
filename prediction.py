@@ -91,12 +91,19 @@ def team_score(xG, xGA, results, head_to_head, home_performance, away_performanc
 team1_score = team_score(xG_1, xGA_1, results_1, head_to_head_1, home_performance_1, away_performance_1, team_is_home_1)
 team2_score = team_score(xG_2, xGA_2, results_2, head_to_head_2, home_performance_2, away_performance_2, team_is_home_2)
 
-def winning_probability(team1_score, team2_score):
-    probability_team1 = team1_score/(team1_score + team2_score) 
-    probability_team2 = (1 - probability_team1)
-    return probability_team1, probability_team2
+# Function that calculates the probability of drawing
+def draw_chances(team1_score, team2_score):
+    difference = abs(team1_score - team2_score)
+    return 0.3 * (1/(1 + difference))
 
-print(f"{winning_probability(team1_score, team2_score)}")
+def winning_probability(team1_score, team2_score, draw_chances):
+    probability_team1 = team1_score/(team1_score + team2_score + draw_chances) 
+    probability_team2 = team2_score/(team1_score + team2_score + draw_chances)
+    probability_draw = draw_chances/(team1_score + team2_score + draw_chances)
+    return probability_team1, probability_draw, probability_team2
+
+draw = draw_chances(team1_score, team2_score)
+print(f"{winning_probability(team1_score, team2_score, draw)}")
 
 
 
