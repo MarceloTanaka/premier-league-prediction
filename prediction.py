@@ -87,7 +87,7 @@ def team_score(xG, xGA, results, head_to_head, home_performance, away_performanc
 
     return sum([weighted_xGA, weighted_current_form, weighted_xG, weighted_strength, weighted_head_to_head])
 
-# Calculating each team's score and giving each a probability of winning
+# Calculating each team's score
 team1_score = team_score(xG_1, xGA_1, results_1, head_to_head_1, home_performance_1, away_performance_1, team_is_home_1)
 team2_score = team_score(xG_2, xGA_2, results_2, head_to_head_2, home_performance_2, away_performance_2, team_is_home_2)
 
@@ -96,6 +96,7 @@ def draw_chances(team1_score, team2_score):
     difference = abs(team1_score - team2_score)
     return 0.3 * (1/(1 + difference))
 
+# Function that calculates winning and drawing probabilities
 def winning_probability(team1_score, team2_score, draw_chances):
     probability_team1 = team1_score/(team1_score + team2_score + draw_chances) 
     probability_team2 = team2_score/(team1_score + team2_score + draw_chances)
