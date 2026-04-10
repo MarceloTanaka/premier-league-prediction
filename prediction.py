@@ -1,35 +1,35 @@
 # Statistics to use: 
 # xG(30%), xGA(30%), last 6 head-to-head(5%), current form (last 5 games)(15%), home/away strength(20%)
 
-# Metrics team 1
-xG_1 = 1.77
-xGA_1 = 0.99
-results_1 = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
-head_to_head_1 = [True, True, True, True, True, True]
+# Metrics team 1 (West Ham)
+xG_1 = 1.17
+xGA_1 = 1.79
+results_1 = "DLWDL"
+head_to_head_1 = [True, False, True, False, False, False]
 
-home_performance_1 = {"Wins": 10, 
-                    "Draws": 7,
-                    "Loses": 2}
+home_performance_1 = {"Wins": 3, 
+                    "Draws": 4,
+                    "Loses": 8}
 
-away_performance_1 = {"Wins": 8,
-                    "Draws": 5,
-                    "Loses": 6}
+away_performance_1 = {"Wins": 4,
+                    "Draws": 4,
+                    "Loses": 8}
 
 team_is_home_1 = True
 
-# Metrics team 2
-xG_2 = 1.77
-xGA_2 = 0.99
-results_2 = "WDLDWLDLDWLWDDWWDLWWLWLLDWWDWDWWWWDWDW"
-head_to_head_2 = [True, True, True, True, True, True]
+# Metrics team 2 (Wolves)
+xG_2 = 1.10
+xGA_2 = 1.63
+results_2 = "DDLWW"
+head_to_head_2 = [False, True, False, True, True, True]
 
-home_performance_2 = {"Wins": 10, 
-                    "Draws": 7,
-                    "Loses": 2}
+home_performance_2 = {"Wins": 3, 
+                    "Draws": 3,
+                    "Loses": 10}
 
-away_performance_2 = {"Wins": 8,
+away_performance_2 = {"Wins": 0,
                     "Draws": 5,
-                    "Loses": 6}
+                    "Loses": 10}
 
 team_is_home_2 = False
 
@@ -92,11 +92,11 @@ team1_score = team_score(xG_1, xGA_1, results_1, head_to_head_1, home_performanc
 team2_score = team_score(xG_2, xGA_2, results_2, head_to_head_2, home_performance_2, away_performance_2, team_is_home_2)
 
 def winning_probability(team1_score, team2_score):
-    probability_team1 = team1_score/(team1_score + team2_score) * 100
-    probability_team2 = (1 - probability_team1) * 100
+    probability_team1 = team1_score/(team1_score + team2_score) 
+    probability_team2 = (1 - probability_team1)
     return probability_team1, probability_team2
 
-
+print(f"{winning_probability(team1_score, team2_score)}")
 
 
 
