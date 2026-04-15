@@ -1,37 +1,37 @@
 # Statistics to use: 
 # xG(30%), xGA(30%), last 6 head-to-head(5%), current form (last 5 games)(15%), home/away strength(20%)
 
-# Metrics team 1 (West Ham)
-xG_1 = 1.17
-xGA_1 = 1.79
-results_1 = "DLWDL"
-head_to_head_1 = [True, False, True, False, False, False]
+# Metrics team 1 (Tottenham)
+xG_1 = 1.31
+xGA_1 = 1.46
+results_1 = "LDLLL"
+head_to_head_1 = [True, True, True, True, None, None]
 
 home_performance_1 = {"Wins": 3, 
                     "Draws": 4,
                     "Loses": 8}
 
-away_performance_1 = {"Wins": 4,
+away_performance_1 = {"Wins": 5,
                     "Draws": 4,
-                    "Loses": 8}
+                    "Loses": 4}
 
-team_is_home_1 = True
+team_is_home_1 = False
 
-# Metrics team 2 (Wolves)
-xG_2 = 1.10
-xGA_2 = 1.63
-results_2 = "DDLWW"
-head_to_head_2 = [False, True, False, True, True, True]
+# Metrics team 2 (Sunderland)
+xG_2 = 1.17
+xGA_2 = 1.65
+results_2 = "WLWDL"
+head_to_head_2 = [False, False, False, False, None, None]
 
-home_performance_2 = {"Wins": 3, 
-                    "Draws": 3,
-                    "Loses": 10}
+home_performance_2 = {"Wins": 7, 
+                    "Draws": 5,
+                    "Loses": 3}
 
 away_performance_2 = {"Wins": 0,
                     "Draws": 5,
                     "Loses": 10}
 
-team_is_home_2 = False
+team_is_home_2 = True
 
 
 # Functions to normalize all the relevant metrics

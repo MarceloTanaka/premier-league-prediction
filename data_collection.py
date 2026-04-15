@@ -3,6 +3,7 @@
 
 import requests
 import json
+import os
 
 # General values (needed for all/most requests)
 API_key = "583c030f85fea127dc37854adb80d696"
@@ -12,9 +13,14 @@ url = "https://v3.football.api-sports.io/"
 team1 = input("Enter the name of team 1: ").title().rstrip().lstrip()
 team2 = input("Enter the name of team 2: ").title().rstrip().lstrip()
 
-# Getting each team's ID
+# Getting each team's ID and checking if there is a file with some team's IDs in the system already
 endpoint = "teams"
-dictionary_of_ids = {}
+if os.path.isfile("team_ids.json"):
+    with open("team_ids.json", "r") as file:
+        content = file.read()
+        dictionary_of_ids = json.loads(content)
+else:
+    dictionary_of_ids = {}
 
 def team_id(team):
     parameters = {
@@ -31,10 +37,11 @@ def team_id(team):
             if number["team"]["country"] == "England":
                 team_id = number["team"]["id"]
                 dictionary_of_ids[team] = team_id
+                with open("team_ids.json", "w") as file:
+                    json.dump(dictionary_of_ids, file)
     return team_id
 
-print(team_id(team1))
-print(dictionary_of_ids)
+
 
 
 
