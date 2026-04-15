@@ -14,7 +14,6 @@ team1 = input("Enter the name of team 1: ").title().rstrip().lstrip()
 team2 = input("Enter the name of team 2: ").title().rstrip().lstrip()
 
 # Getting each team's ID and checking if there is a file with some team's IDs in the system already
-endpoint = "teams"
 if os.path.isfile("team_ids.json"):
     with open("team_ids.json", "r") as file:
         content = file.read()
@@ -23,6 +22,7 @@ else:
     dictionary_of_ids = {}
 
 def team_id(team):
+    endpoint = "teams"
     parameters = {
         "name": team
     }
@@ -47,8 +47,31 @@ def team_id(team):
                     json.dump(dictionary_of_ids, file)
     return team_id
 
-print(team_id(team1))
-print(dictionary_of_ids)
+def team_form(team_id):
+    endpoint = "teams/statistics"
+    parameters = {
+        "league": 39,
+        "season": 2024,
+        "team": team_id
+    }
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response.text
+    response_data = json.loads(response.text)
+
+    team_form = response_data["response"]["form"]
+
+    home_wins = response_data["response"]["fixtures"]["wins"]["home"]
+    home_draws = response_data["response"]["fixtures"]["draws"]["home"]
+    home_loses = response_data["response"]["fixtures"]["loses"]["home"]
+    home_performance = {"Wins": home_wins, "Draws": home_draws, "Loses": home_loses}
+    
+    away_wins = response_data["response"]["fixtures"]["wins"]["away"]
+    away_draws = response_data["response"]["fixtures"]["draws"]["away"]
+    away_loses = response_data["response"]["fixtures"]["loses"]["away"]
+    away_performance = {"Wins": away_wins, "Draws": away_draws, "Loses": away_loses}
+
+    return team_form, home_performance, away_performance
 
 
 
