@@ -24,23 +24,31 @@ else:
 
 def team_id(team):
     parameters = {
-        "search": team
+        "name": team
     }
 
+    # If already cached, return team's ID immediately
     if team in dictionary_of_ids:
         team_id = dictionary_of_ids[team]
+
+    # Otherwise fetch from API     
     else: 
         response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
         response.text
         response_data = json.loads(response.text)
+        team_id = None
         for number in response_data["response"]:
             if number["team"]["country"] == "England":
                 team_id = number["team"]["id"]
+
+                # Save the value to a dictionary and then to a json file 
                 dictionary_of_ids[team] = team_id
                 with open("team_ids.json", "w") as file:
                     json.dump(dictionary_of_ids, file)
     return team_id
 
+print(team_id(team1))
+print(dictionary_of_ids)
 
 
 
