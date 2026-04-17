@@ -1,5 +1,5 @@
 # File that collects the data from API-football and FootyStats (scraping)
-# NEED xG (FootyStats), xGA (FootyStats), last 6 head-to-head, current form, home/away strength
+# NEED goals scored, goals scored against, last 6 head-to-head, home/away strength, home/away goals scored/against
 
 import requests
 import json
@@ -47,19 +47,17 @@ def team_id(team):
                     json.dump(dictionary_of_ids, file)
     return team_id
 
-def team_form(team_id):
+def home_away_strength(team_id):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
-        "season": 2024,
+        "season": 2023,
         "team": team_id
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response.text
     response_data = json.loads(response.text)
-
-    team_form = response_data["response"]["form"]
 
     home_wins = response_data["response"]["fixtures"]["wins"]["home"]
     home_draws = response_data["response"]["fixtures"]["draws"]["home"]
@@ -71,7 +69,7 @@ def team_form(team_id):
     away_loses = response_data["response"]["fixtures"]["loses"]["away"]
     away_performance = {"Wins": away_wins, "Draws": away_draws, "Loses": away_loses}
 
-    return team_form, home_performance, away_performance
+    return home_performance, away_performance
 
 
 
