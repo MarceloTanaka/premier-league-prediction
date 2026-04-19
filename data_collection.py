@@ -46,31 +46,6 @@ def team_id(team):
                     json.dump(dictionary_of_ids, file)
     return team_id
 
-# Calculate the home/away strength based on wins/draws/loses of the team
-# Might be irrelevant for the Poisson model I am now planning to integrate
-def home_away_strength(team_id):
-    endpoint = "teams/statistics"
-    parameters = {
-        "league": 39,
-        "season": 2023,
-        "team": team_id
-    }
-
-    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response_data = json.loads(response.text)
-
-    home_wins = response_data["response"]["fixtures"]["wins"]["home"]
-    home_draws = response_data["response"]["fixtures"]["draws"]["home"]
-    home_loses = response_data["response"]["fixtures"]["loses"]["home"]
-    home_performance = {"Wins": home_wins, "Draws": home_draws, "Loses": home_loses}
-    
-    away_wins = response_data["response"]["fixtures"]["wins"]["away"]
-    away_draws = response_data["response"]["fixtures"]["draws"]["away"]
-    away_loses = response_data["response"]["fixtures"]["loses"]["away"]
-    away_performance = {"Wins": away_wins, "Draws": away_draws, "Loses": away_loses}
-
-    return home_performance, away_performance
-
 # Getting the average goals scored/conceded at home/away per game in the league
 def average_goals():
     endpoint = "standings"
