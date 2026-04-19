@@ -10,8 +10,8 @@ API_key = "583c030f85fea127dc37854adb80d696"
 url = "https://v3.football.api-sports.io/"
 
 # Asks the user what two teams are playing
-team1 = input("Enter the name of team 1: ").title().rstrip().lstrip()
-team2 = input("Enter the name of team 2: ").title().rstrip().lstrip()
+team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
+team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
 
 # Getting each team's ID and checking if there is a file with some team's IDs in the system already
 if os.path.isfile("team_ids.json"):
@@ -34,7 +34,6 @@ def team_id(team):
     # Otherwise fetch from API     
     else: 
         response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-        response.text
         response_data = json.loads(response.text)
         team_id = None
         for number in response_data["response"]:
@@ -58,7 +57,6 @@ def home_away_strength(team_id):
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response.text
     response_data = json.loads(response.text)
 
     home_wins = response_data["response"]["fixtures"]["wins"]["home"]
@@ -78,11 +76,10 @@ def average_goals():
     endpoint = "standings"
     parameters = {
         "league": 39,
-        "season": 2024
+        "season": 2023
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response.text
     response_data = json.loads(response.text)
 
     total_home_goals_scored = 0
@@ -103,6 +100,44 @@ def average_goals():
     away_goals_conceded_average = home_goals_scored_average
 
     return home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average
+
+# Getting the average goals scored by the home team and calculating its attacking strength
+def home_attacking_strength(team1, home_goals_scored_average):
+    endpoint = "teams/statistics"
+    parameters = {
+        "league": 39,
+        "season": 2023,
+        "team": dictionary_of_ids[team1]
+    }
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response_data = json.loads(response.text)["response"]
+
+    team_goals_scored_home_average = response_data["goals"]["for"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+    home_attacking_strength = team_goals_scored_home_average/home_goals_scored_average
+
+    return home_attacking_strength
+
+#Getting the average goals conceded by the away team and calculatiing its defensive strength
+def away_defensive_strength(team2, away_goals_conceded_average):
+    endpoint = "teams/statistics"
+    parameters = {
+        "league": 39,
+        "season": 2023,
+        "team": dictionary_of_ids[team2]
+    }
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response_data = json.loads(response.text)["response"]
+
+    team_goals_conceded_away_average = response_data["goals"]["against"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+    away_defensive_strength = team_goals_conceded_away_average/away_goals_conceded_average
+
+    return away_defensive_strength
+    
+
+
+
 
 
 
