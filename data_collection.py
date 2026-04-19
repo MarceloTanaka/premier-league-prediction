@@ -47,6 +47,8 @@ def team_id(team):
                     json.dump(dictionary_of_ids, file)
     return team_id
 
+# Calculate the home/away strength based on wins/draws/loses of the team
+# Might be irrelevant for the Poisson model I am now planning to integrate
 def home_away_strength(team_id):
     endpoint = "teams/statistics"
     parameters = {
@@ -70,6 +72,42 @@ def home_away_strength(team_id):
     away_performance = {"Wins": away_wins, "Draws": away_draws, "Loses": away_loses}
 
     return home_performance, away_performance
+
+# Getting the average goals scored/conceded at home/away per game in the league
+def average_goals():
+    endpoint = "standings"
+    parameters = {
+        "league": 39,
+        "season": 2024
+    }
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response.text
+    response_data = json.loads(response.text)
+
+    total_home_goals_scored = 0
+    teams = response_data["response"][0]["league"]["standings"][0]
+    for team in teams:
+        total_home_goals_scored += team["home"]["goals"]["for"]
+
+    home_goals_scored_average = total_home_goals_scored/380
+
+    total_away_goals_scored = 0
+    for team in teams:
+        total_away_goals_scored += team["away"]["goals"]["for"]
+
+    away_goals_scored_average = total_away_goals_scored/380
+
+    # Goals conceded is the inverse of the goals scored
+    home_goals_conceded_average = away_goals_scored_average
+    away_goals_conceded_average = home_goals_scored_average
+
+    return home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average
+
+
+
+
+    
 
 
 
