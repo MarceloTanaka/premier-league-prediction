@@ -196,11 +196,10 @@ def probable_outcome(goals_home_team_probability, goals_away_team_probability):
     # Calculate what is the probability of this score
     score_prob = home_higher_prob*away_higher_prob
 
-    return score_prob
+    return score_prob, home_goals, away_goals
 
 # Calculating the probabilities for W/D/L for each team
 def win_lose_draw_probability(goals_home_team_probability, goals_away_team_probability):
-    
     home_win = 0
     draw = 0
     away_win = 0
@@ -215,7 +214,6 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
                 away_win += combination
 
     return home_win, draw, away_win
-                
                 
 probability_home_goals, probability_away_goals = goal_probability(2.016, 0.653)
 probable_outcome(probability_home_goals, probability_away_goals)
