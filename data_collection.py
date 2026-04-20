@@ -11,8 +11,8 @@ API_key = "583c030f85fea127dc37854adb80d696"
 url = "https://v3.football.api-sports.io/"
 
 # Asks the user what two teams are playing (this will go in the main function later)
-team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
-team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
+# team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
+# team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
 
 # Getting each team's ID and checking if there is a file with some team's IDs in the system already
 if os.path.isfile("team_ids.json"):
@@ -157,13 +157,50 @@ def expected_away_team_goals(away_attacking_strength, home_defensive_strength, a
 def goal_probability(expected_home_team_goals, expected_away_team_goals):
     
     # Calculating the probability for the home team
-    print("=== Home Team ===")
+    goals_home_team_probability = []
     for i in range(0, 6):
         goals_for_home = poisson.pmf(i, expected_home_team_goals)
-        print(f"{i} Goal probability: {goals_for_home}")
+        goals_home_team_probability.append(float(goals_for_home))
 
     # Calculating the probability for the away team
-    print("=== Away Team === ")
+    goals_away_team_probability = []
     for i in range(0, 6):
         goals_for_away = poisson.pmf(i, expected_away_team_goals)
-        print(f"{i} Goal probability: {goals_for_away}")
+        goals_away_team_probability.append(float(goals_for_away))
+
+    return goals_home_team_probability, goals_away_team_probability
+
+# Calculating most probable outcome
+def probable_outcome(goals_home_team_probability, goals_away_team_probability):
+    
+    # Home team higher probability of goals scored
+    home_higher_prob = 0
+    home_goals = 0
+    for probability in goals_home_team_probability:
+        if home_higher_prob == 0:
+            home_higher_prob = probability
+        elif probability > home_higher_prob:
+            home_higher_prob = probability
+            home_goals = goals_home_team_probability.index(probability)
+
+    # Away team higher probability of goals scored
+    away_higher_prob = 0
+    away_goals = 0
+    for probability in goals_away_team_probability:
+        if away_higher_prob == 0:
+            away_higher_prob = probability
+        elif probability > away_higher_prob:
+            away_higher_prob = probability
+            away_goals = goals_away_team_probability.index(probability)
+
+    # Calculate what is the probability of this score
+    game_result_prob = home_higher_prob*away_higher_prob
+
+    print(f"Tottenham {home_goals} - Stoke {away_goals} has a probability of {game_result_prob}")
+
+
+probability_home_goals, probability_away_goals = goal_probability(2.016, 0.653)
+probable_outcome(probability_home_goals, probability_away_goals)
+
+    
+    
