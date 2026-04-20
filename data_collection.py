@@ -215,9 +215,8 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
 
     return home_win, draw, away_win
                 
-probability_home_goals, probability_away_goals = goal_probability(2.016, 0.653)
-probable_outcome(probability_home_goals, probability_away_goals)
-win_lose_draw_probability(probability_home_goals, probability_away_goals)
+def main():
+    pass
 
     
     
