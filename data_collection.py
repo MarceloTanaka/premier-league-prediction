@@ -4,12 +4,13 @@
 import requests
 import json
 import os
+from scipy.stats import poisson
 
 # General values (needed for all/most requests)
 API_key = "583c030f85fea127dc37854adb80d696"
 url = "https://v3.football.api-sports.io/"
 
-# Asks the user what two teams are playing
+# Asks the user what two teams are playing (this will go in the main function later)
 team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
 team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
 
@@ -152,5 +153,17 @@ def home_defensive_strength(team1, home_goals_conceded_average):
 def expected_away_team_goals(away_attacking_strength, home_defensive_strength, away_goals_scored_average):
     return away_attacking_strength*home_defensive_strength*away_goals_scored_average
 
+# Calculating the probability of each score using Poisson Distribution
+def goal_probability(expected_home_team_goals, expected_away_team_goals):
+    
+    # Calculating the probability for the home team
+    print("=== Home Team ===")
+    for i in range(0, 6):
+        goals_for_home = poisson.pmf(i, expected_home_team_goals)
+        print(f"{i} Goal probability: {goals_for_home}")
 
-
+    # Calculating the probability for the away team
+    print("=== Away Team === ")
+    for i in range(0, 6):
+        goals_for_away = poisson.pmf(i, expected_away_team_goals)
+        print(f"{i} Goal probability: {goals_for_away}")
