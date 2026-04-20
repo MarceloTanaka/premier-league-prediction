@@ -194,13 +194,33 @@ def probable_outcome(goals_home_team_probability, goals_away_team_probability):
             away_goals = goals_away_team_probability.index(probability)
 
     # Calculate what is the probability of this score
-    game_result_prob = home_higher_prob*away_higher_prob
+    score_prob = home_higher_prob*away_higher_prob
 
-    print(f"Tottenham {home_goals} - Stoke {away_goals} has a probability of {game_result_prob}")
+    return score_prob
+
+# Calculating the probabilities for W/D/L for each team
+def win_lose_draw_probability(goals_home_team_probability, goals_away_team_probability):
+    
+    home_win = 0
+    draw = 0
+    away_win = 0
+    for i, p_home in enumerate(goals_home_team_probability):
+        for j, p_away in enumerate(goals_away_team_probability):
+            combination = p_home * p_away
+            if i > j:
+                home_win += combination
+            elif i == j:
+                draw += combination
+            else:
+                away_win += combination
+
+    return home_win, draw, away_win
+                
 
 
 probability_home_goals, probability_away_goals = goal_probability(2.016, 0.653)
 probable_outcome(probability_home_goals, probability_away_goals)
+win_lose_draw_probability(probability_home_goals, probability_away_goals)
 
     
     
