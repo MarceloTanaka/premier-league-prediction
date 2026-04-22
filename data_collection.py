@@ -233,7 +233,25 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
                 away_win += combination
 
     return home_win, draw, away_win
-                
+
+def promoted_team():
+    endpoint = "standings"
+    parameters = {
+        "league": 40,
+        "season": 2023
+    }
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response_data = json.loads(response.text)["response"][0]["league"]["standings"][0]
+
+    promoted_teams = []
+    for team in response_data:
+        if team["description"] == "Promotion":
+            promoted_teams.append(team["team"]["name"])
+
+    return promoted_teams
+     
+
 def main():
     # Asks the user what two teams are playing
     team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
@@ -248,16 +266,29 @@ def main():
         print("The team you entered is not in the system. Please check spelling.")
         return
 
+    # Get the promoted teams
+    promoted_teams = promoted_team()
+    
     # Get the average goals scored/conceded in the league
     home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
 
     # Calculating the home team's attacking/defensive strength
-    team1_attacking_strength = home_attacking_strength(team1_id, home_goals_scored_average)
-    team1_defensive_strength = home_defensive_strength(team1_id, home_goals_conceded_average)
+    if team1.lower() in [t.lower() for t in promoted_teams]:
+        # Promoted home team: fixed strengths
+        team1_attacking_strength = 0.8/home_goals_scored_average
+        team1_defensive_strength = 1.0/home_goals_conceded_average
+    else:
+        team1_attacking_strength = home_attacking_strength(team1_id, home_goals_scored_average)
+        team1_defensive_strength = home_defensive_strength(team1_id, home_goals_conceded_average)
 
     # Calculating the away team's attacking/defensive strength
-    team2_attacking_strength = away_attacking_strength(team2_id, away_goals_scored_average)
-    team2_defensive_strength = away_defensive_strength(team2_id, away_goals_conceded_average)
+    if team2.lower() in [t.lower() for t in promoted_teams]:
+        # Promoted away team: fixed strengths
+        team2_attacking_strength = 0.8/away_goals_scored_average
+        team2_defensive_strength = 1.0/away_goals_conceded_average
+    else:
+        team2_attacking_strength = away_attacking_strength(team2_id, away_goals_scored_average)
+        team2_defensive_strength = away_defensive_strength(team2_id, away_goals_conceded_average)
 
     # Calculating the expected home/away team goals
     team1_expected_goals = expected_home_team_goals(team1_attacking_strength, team2_defensive_strength, home_goals_scored_average)
@@ -273,11 +304,8 @@ def main():
     home_win, draw, away_win = win_lose_draw_probability(goals_team1_probabilities, goals_team2_probabilities)
 
     # Displaying the results in the terminal
-    if draw == 1:
-        print("One of the teams were not in the Premier League the seasons the data were taken")
-    else:
-        print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a{score_prob*100: .2f}%")
-        print(f"{team1}:{home_win*100: .2f}% \nDraw:{draw*100: .2f}% \n{team2}:{away_win*100: .2f}%")
+    print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a{score_prob*100: .2f}%")
+    print(f"{team1}:{home_win*100: .2f}% \nDraw:{draw*100: .2f}% \n{team2}:{away_win*100: .2f}%")
 
 if __name__ == "__main__":
     main()
