@@ -72,8 +72,8 @@ def average_goals():
 
     return home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average
 
-# Getting the average goals scored by the home team and calculating its attacking strength
-def home_attacking_strength(team1_id, home_goals_scored_average):
+# Getting the average goals scored/conceded by the home team and calculating its attacking/defensive strength
+def home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
@@ -84,19 +84,28 @@ def home_attacking_strength(team1_id, home_goals_scored_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
+    # Get the goals scored and calculate the home attacking strength
     try:
         team_goals_scored_home_average = response_data["goals"]["for"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+        home_attacking_strength = team_goals_scored_home_average/home_goals_scored_average
     except ZeroDivisionError:
-        return 0
+        home_attacking_strength = 0
     except KeyError:
-        return 0
+        home_attacking_strength = 0
     
-    home_attacking_strength = team_goals_scored_home_average/home_goals_scored_average
+    # Get the goals conceded and calculate the home defensive strength
+    try:
+        team_goals_conceded_home_average = response_data["goals"]["against"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+        home_defensive_strength = team_goals_conceded_home_average/home_goals_conceded_average
+    except ZeroDivisionError:
+        home_defensive_strength = 0
+    except KeyError:
+        home_defensive_strength = 0
 
-    return home_attacking_strength
+    return home_attacking_strength, home_defensive_strength
 
-# Getting the average goals conceded by the away team and calculatiing its defensive strength
-def away_defensive_strength(team2_id, away_goals_conceded_average):
+# Getting the average goals scored/conceded by the away team and calculatiing its attacking/defensive strength
+def away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
@@ -107,66 +116,31 @@ def away_defensive_strength(team2_id, away_goals_conceded_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
+
+    away_defensive_strength = 0
+    # Get goals conceded and calculate defensive strength
     try:
         team_goals_conceded_away_average = response_data["goals"]["against"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+        away_defensive_strength = team_goals_conceded_away_average/away_goals_conceded_average
     except ZeroDivisionError:
-        return 0
+        away_defensive_strength = 0
     except KeyError:
-        return 0
-    
-    away_defensive_strength = team_goals_conceded_away_average/away_goals_conceded_average
+        away_defensive_strength = 0
 
-    return away_defensive_strength
+    # Get goals scored and calculate attacking strength
+    try:
+        team_goals_scored_away_average = response_data["goals"]["for"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+        away_attacking_strength = team_goals_scored_away_average/away_goals_scored_average
+    except ZeroDivisionError:
+        away_attacking_strength = 0
+    except KeyError:
+        away_attacking_strength = 0
+    
+    return away_attacking_strength, away_defensive_strength
 
 # Projecting expected home team goals
 def expected_home_team_goals(home_attacking_strength, away_defensive_strength, home_goals_scored_average):
     return home_attacking_strength*away_defensive_strength*home_goals_scored_average
-
-# Getting the average goals scored by the away team and calculating its attacking strength
-def away_attacking_strength(team2_id, away_goals_scored_average):
-    endpoint = "teams/statistics"
-    parameters = {
-        "league": 39,
-        "season": 2023,
-        "team": team2_id
-    }
-
-    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response_data = json.loads(response.text)["response"]
-
-    try:
-        team_goals_scored_away_average = response_data["goals"]["for"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
-    except ZeroDivisionError:
-        return 0
-    except KeyError:
-        return 0
-    
-    away_attacking_strength = team_goals_scored_away_average/away_goals_scored_average
-
-    return away_attacking_strength
-
-# Getting the average goals conceded by the home team and calculatiing its defensive strength
-def home_defensive_strength(team1_id, home_goals_conceded_average):
-    endpoint = "teams/statistics"
-    parameters = {
-        "league": 39,
-        "season": 2023,
-        "team": team1_id
-    }
-
-    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response_data = json.loads(response.text)["response"]
-
-    try:
-        team_goals_conceded_home_average = response_data["goals"]["against"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
-    except ZeroDivisionError:
-        return 0
-    except KeyError:
-        return 0
-    
-    home_defensive_strength = team_goals_conceded_home_average/home_goals_conceded_average
-
-    return home_defensive_strength
 
 # Projecting expected away team goals
 def expected_away_team_goals(away_attacking_strength, home_defensive_strength, away_goals_scored_average):
@@ -280,8 +254,7 @@ def main():
         team1_attacking_strength = 0.8/home_goals_scored_average
         team1_defensive_strength = 1.0/home_goals_conceded_average
     else:
-        team1_attacking_strength = home_attacking_strength(team1_id, home_goals_scored_average)
-        team1_defensive_strength = home_defensive_strength(team1_id, home_goals_conceded_average)
+        team1_attacking_strength, team1_defensive_strength = home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average)
 
     # Calculating the away team's attacking/defensive strength
     if team2.lower() in [t.lower() for t in promoted_teams]:
@@ -289,8 +262,7 @@ def main():
         team2_attacking_strength = 0.8/away_goals_scored_average
         team2_defensive_strength = 1.0/away_goals_conceded_average
     else:
-        team2_attacking_strength = away_attacking_strength(team2_id, away_goals_scored_average)
-        team2_defensive_strength = away_defensive_strength(team2_id, away_goals_conceded_average)
+        team2_attacking_strength, team2_defensive_strength = away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average)
 
     # Calculating the expected home/away team goals
     team1_expected_goals = expected_home_team_goals(team1_attacking_strength, team2_defensive_strength, home_goals_scored_average)
