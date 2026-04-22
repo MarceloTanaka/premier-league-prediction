@@ -245,10 +245,11 @@ def main():
     home_win, draw, away_win = win_lose_draw_probability(goals_team1_probabilities, goals_team2_probabilities)
 
     # Displaying the results in the terminal
-    print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a {score_prob*100: .2f}%")
-    print(f"{team1}: {home_win*100: .2f}% \n Draw: {draw*100: .2f}% \n {team2}: {away_win*100: .2f}%")
+    print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a{score_prob*100: .2f}%")
+    print(f"{team1}:{home_win*100: .2f}% \nDraw:{draw*100: .2f}% \n{team2}:{away_win*100: .2f}%")
 
-
+if __name__ == "__main__":
+    main()
     
 
 
