@@ -219,6 +219,9 @@ def main():
     # Get each team's ID
     team1_id = team_id(team1)
     team2_id = team_id(team2)
+    if team1_id or team2_id == None:
+        print("The team you entered is not in the system. Please check spelling.")
+        return
 
     # Get the average goals scored/conceded in the league
     home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
@@ -250,13 +253,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-
-
-
-    
-
-
-
-    
     
