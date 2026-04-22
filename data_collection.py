@@ -1,5 +1,4 @@
 # File that collects the data from API-football 
-# NEED goals scored, goals scored against, last 6 head-to-head, home/away strength, home/away goals scored/against
 
 import requests
 import json
@@ -85,7 +84,13 @@ def home_attacking_strength(team1_id, home_goals_scored_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
-    team_goals_scored_home_average = response_data["goals"]["for"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+    try:
+        team_goals_scored_home_average = response_data["goals"]["for"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+    except ZeroDivisionError:
+        return 0
+    except KeyError:
+        return 0
+    
     home_attacking_strength = team_goals_scored_home_average/home_goals_scored_average
 
     return home_attacking_strength
@@ -102,7 +107,13 @@ def away_defensive_strength(team2_id, away_goals_conceded_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
-    team_goals_conceded_away_average = response_data["goals"]["against"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+    try:
+        team_goals_conceded_away_average = response_data["goals"]["against"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+    except ZeroDivisionError:
+        return 0
+    except KeyError:
+        return 0
+    
     away_defensive_strength = team_goals_conceded_away_average/away_goals_conceded_average
 
     return away_defensive_strength
@@ -123,7 +134,13 @@ def away_attacking_strength(team2_id, away_goals_scored_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
-    team_goals_scored_away_average = response_data["goals"]["for"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+    try:
+        team_goals_scored_away_average = response_data["goals"]["for"]["total"]["away"]/response_data["fixtures"]["played"]["away"]
+    except ZeroDivisionError:
+        return 0
+    except KeyError:
+        return 0
+    
     away_attacking_strength = team_goals_scored_away_average/away_goals_scored_average
 
     return away_attacking_strength
@@ -140,7 +157,13 @@ def home_defensive_strength(team1_id, home_goals_conceded_average):
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
     response_data = json.loads(response.text)["response"]
 
-    team_goals_conceded_home_average = response_data["goals"]["against"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+    try:
+        team_goals_conceded_home_average = response_data["goals"]["against"]["total"]["home"]/response_data["fixtures"]["played"]["home"]
+    except ZeroDivisionError:
+        return 0
+    except KeyError:
+        return 0
+    
     home_defensive_strength = team_goals_conceded_home_average/home_goals_conceded_average
 
     return home_defensive_strength
@@ -250,8 +273,11 @@ def main():
     home_win, draw, away_win = win_lose_draw_probability(goals_team1_probabilities, goals_team2_probabilities)
 
     # Displaying the results in the terminal
-    print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a{score_prob*100: .2f}%")
-    print(f"{team1}:{home_win*100: .2f}% \nDraw:{draw*100: .2f}% \n{team2}:{away_win*100: .2f}%")
+    if draw == 1:
+        print("One of the teams were not in the Premier League the seasons the data were taken")
+    else:
+        print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a{score_prob*100: .2f}%")
+        print(f"{team1}:{home_win*100: .2f}% \nDraw:{draw*100: .2f}% \n{team2}:{away_win*100: .2f}%")
 
 if __name__ == "__main__":
     main()
