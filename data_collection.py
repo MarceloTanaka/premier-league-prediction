@@ -219,7 +219,9 @@ def main():
     # Get each team's ID
     team1_id = team_id(team1)
     team2_id = team_id(team2)
-    if team1_id or team2_id == None:
+
+    # Check if any of the team's ID is None and stop the program there to prevent any crashes
+    if team1_id is None or team2_id is None:
         print("The team you entered is not in the system. Please check spelling.")
         return
 
