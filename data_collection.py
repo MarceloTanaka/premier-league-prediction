@@ -245,13 +245,15 @@ def promoted_team():
     response_data = json.loads(response.text)["response"][0]["league"]["standings"][0]
 
     promoted_teams = []
+    playoff_teams = {}
     for team in response_data:
         if team["description"] == "Promotion":
             promoted_teams.append(team["team"]["name"])
+        elif team["description"] == "Promotion Playoffs":
+            playoff_teams[team["team"]["name"]] = team["team"]["id"]
 
-    return promoted_teams
+    return promoted_teams, playoff_teams
      
-
 def main():
     # Asks the user what two teams are playing
     team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
@@ -267,7 +269,7 @@ def main():
         return
 
     # Get the promoted teams
-    promoted_teams = promoted_team()
+    promoted_teams, playoff_teams = promoted_team()
     
     # Get the average goals scored/conceded in the league
     home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
