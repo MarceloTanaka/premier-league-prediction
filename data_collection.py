@@ -246,9 +246,9 @@ def main():
 
     # Displaying the results in the terminal
     print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a {score_prob*100: .2f}%")
-    print(f"{team1}: {home_win*100: .2f}% \n Draw: {draw*100: .2f} \n {team2}: {away_win*100: .2f}")
+    print(f"{team1}: {home_win*100: .2f}% \n Draw: {draw*100: .2f}% \n {team2}: {away_win*100: .2f}%")
 
-    
+
     
 
 
