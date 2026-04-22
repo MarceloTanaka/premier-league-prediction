@@ -10,10 +10,6 @@ from scipy.stats import poisson
 API_key = "583c030f85fea127dc37854adb80d696"
 url = "https://v3.football.api-sports.io/"
 
-# Asks the user what two teams are playing (this will go in the main function later)
-# team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
-# team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
-
 # Getting each team's ID and checking if there is a file with some team's IDs in the system already
 if os.path.isfile("team_ids.json"):
     with open("team_ids.json", "r") as file:
@@ -78,12 +74,12 @@ def average_goals():
     return home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average
 
 # Getting the average goals scored by the home team and calculating its attacking strength
-def home_attacking_strength(team1, home_goals_scored_average):
+def home_attacking_strength(team1_id, home_goals_scored_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
         "season": 2023,
-        "team": dictionary_of_ids[team1]
+        "team": team1_id
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -95,12 +91,12 @@ def home_attacking_strength(team1, home_goals_scored_average):
     return home_attacking_strength
 
 # Getting the average goals conceded by the away team and calculatiing its defensive strength
-def away_defensive_strength(team2, away_goals_conceded_average):
+def away_defensive_strength(team2_id, away_goals_conceded_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
         "season": 2023,
-        "team": dictionary_of_ids[team2]
+        "team": team2_id
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -116,12 +112,12 @@ def expected_home_team_goals(home_attacking_strength, away_defensive_strength, h
     return home_attacking_strength*away_defensive_strength*home_goals_scored_average
 
 # Getting the average goals scored by the away team and calculating its attacking strength
-def away_attacking_strength(team2, away_goals_scored_average):
+def away_attacking_strength(team2_id, away_goals_scored_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
         "season": 2023,
-        "team": dictionary_of_ids[team2]
+        "team": team2_id
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -133,12 +129,12 @@ def away_attacking_strength(team2, away_goals_scored_average):
     return away_attacking_strength
 
 # Getting the average goals conceded by the home team and calculatiing its defensive strength
-def home_defensive_strength(team1, home_goals_conceded_average):
+def home_defensive_strength(team1_id, home_goals_conceded_average):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
         "season": 2023,
-        "team": dictionary_of_ids[team1]
+        "team": team1_id
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -216,7 +212,50 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
     return home_win, draw, away_win
                 
 def main():
-    pass
+    # Asks the user what two teams are playing
+    team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
+    team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
+
+    # Get each team's ID
+    team1_id = team_id(team1)
+    team2_id = team_id(team2)
+
+    # Get the average goals scored/conceded in the league
+    home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
+
+    # Calculating the home team's attacking/defensive strength
+    team1_attacking_strength = home_attacking_strength(team1_id, home_goals_scored_average)
+    team1_defensive_strength = home_defensive_strength(team1_id, home_goals_conceded_average)
+
+    # Calculating the away team's attacking/defensive strength
+    team2_attacking_strength = away_attacking_strength(team2_id, away_goals_scored_average)
+    team2_defensive_strength = away_defensive_strength(team2_id, away_goals_conceded_average)
+
+    # Calculating the expected home/away team goals
+    team1_expected_goals = expected_home_team_goals(team1_attacking_strength, team2_defensive_strength, home_goals_scored_average)
+    team2_expected_goals = expected_away_team_goals(team2_attacking_strength, team1_defensive_strength, away_goals_scored_average)
+
+    # Calculating goal probability and putting these probabilities in a list
+    goals_team1_probabilities, goals_team2_probabilities = goal_probability(team1_expected_goals, team2_expected_goals)
+
+    # Calculating the most probable outcome based on the highest goal probability for each team
+    score_prob, home_goals, away_goals = probable_outcome(goals_team1_probabilities, goals_team2_probabilities)
+
+    # Calculating the probabilities for a W/D/L
+    home_win, draw, away_win = win_lose_draw_probability(goals_team1_probabilities, goals_team2_probabilities)
+
+    # Displaying the results in the terminal
+    print(f"The most probable score is {team1} {home_goals} : {team2} {away_goals} with a {score_prob*100: .2f}%")
+    print(f"{team1}: {home_win*100: .2f}% \n Draw: {draw*100: .2f} \n {team2}: {away_win*100: .2f}")
+
+    
+    
+
+
+
+    
+
+
 
     
     
