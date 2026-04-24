@@ -234,14 +234,17 @@ def playoff_winner():
     }     
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
-    response_data = json.loads(response.text)["response"][0]["teams"]
+    fixtures = json.loads(response.text)["response"]
 
-    if response_data["home"]["winner"]:
-        promoted = response_data["home"]["name"]
-    elif response_data["away"]["winner"]:
-        promoted = response_data["away"]["name"]
+    if not fixtures:
+        return None  # API returned nothing
 
-    return promoted
+    teams = fixtures[0]["teams"]
+
+    if teams["home"]["winner"]:
+        return teams["home"]["name"]
+    else:
+        return teams["away"]["name"]
 
 def main():
     # Asks the user what two teams are playing
@@ -257,8 +260,9 @@ def main():
         print("The team you entered is not in the system. Please check spelling.")
         return
 
-    # Get the promoted teams
+    # Get all the promoted teams, including the one promoted through playoffs
     promoted_teams = promoted_team()
+    promoted_teams.append(playoff_winner())
     
     # Get the average goals scored/conceded in the league
     home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
