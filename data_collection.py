@@ -44,11 +44,11 @@ def team_id(team):
     return team_id
 
 # Getting the average goals scored/conceded at home/away per game in the league
-def average_goals():
+def average_goals(season):
     endpoint = "standings"
     parameters = {
         "league": 39,
-        "season": 2023
+        "season": season - 1
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -74,11 +74,11 @@ def average_goals():
     return home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average
 
 # Getting the average goals scored/conceded by the home team and calculating its attacking/defensive strength
-def home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average):
+def home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average, season):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
-        "season": 2023,
+        "season": season - 1,
         "team": team1_id
     }
 
@@ -106,11 +106,11 @@ def home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_
     return home_attacking_strength, home_defensive_strength
 
 # Getting the average goals scored/conceded by the away team and calculatiing its attacking/defensive strength
-def away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average):
+def away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average, season):
     endpoint = "teams/statistics"
     parameters = {
         "league": 39,
-        "season": 2023,
+        "season": season - 1,
         "team": team2_id
     }
 
@@ -209,11 +209,11 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
 
     return home_win, draw, away_win
 
-def promoted_team():
+def promoted_team(season):
     endpoint = "standings"
     parameters = {
         "league": 40,
-        "season": 2023
+        "season": season - 1
     }
 
     response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
@@ -226,11 +226,11 @@ def promoted_team():
 
     return promoted_teams
      
-def playoff_winner():
+def playoff_winner(season):
     endpoint = "fixtures"
     parameters = {
         "league": 40,
-        "season": 2023,
+        "season": season - 1,
         "round": "Promotion Play-offs - Final"
     }     
 
@@ -253,13 +253,13 @@ def ask_season():
     while True:
         season = input("Which season do you want to predict the match for? (Type only the first year, for example 2023 for the 2023/24 season): ")
 
-        if not season.isdigit():
+        if not season.isdigit(): # Check if the input is a number
             print("The input you entered is not a valid number, please enter a year")
             continue
 
-        season = int(season)
+        season = int(season) # If it is a number, it will convert it into an integer
 
-        if 2023 <= season <= current_year:
+        if 2023 <= season <= current_year: # Check if the year entered is in the expected range of the program
             return season
 
         print(f"Please enter a year between 2023 and {current_year}")
@@ -282,11 +282,11 @@ def main():
         return
 
     # Get all the promoted teams, including the one promoted through playoffs
-    promoted_teams = promoted_team()
-    promoted_teams.append(playoff_winner())
+    promoted_teams = promoted_team(season)
+    promoted_teams.append(playoff_winner(season))
     
     # Get the average goals scored/conceded in the league
-    home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals()
+    home_goals_scored_average, away_goals_scored_average, home_goals_conceded_average, away_goals_conceded_average = average_goals(season)
 
     # Calculating the home team's attacking/defensive strength
     if team1.lower() in [t.lower() for t in promoted_teams]:
@@ -294,7 +294,7 @@ def main():
         team1_attacking_strength = 0.8/home_goals_scored_average
         team1_defensive_strength = 1.0/home_goals_conceded_average
     else:
-        team1_attacking_strength, team1_defensive_strength = home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average)
+        team1_attacking_strength, team1_defensive_strength = home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average, season)
 
     # Calculating the away team's attacking/defensive strength
     if team2.lower() in [t.lower() for t in promoted_teams]:
@@ -302,7 +302,7 @@ def main():
         team2_attacking_strength = 0.8/away_goals_scored_average
         team2_defensive_strength = 1.0/away_goals_conceded_average
     else:
-        team2_attacking_strength, team2_defensive_strength = away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average)
+        team2_attacking_strength, team2_defensive_strength = away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average, season)
 
     # Calculating the expected home/away team goals
     team1_expected_goals = expected_home_team_goals(team1_attacking_strength, team2_defensive_strength, home_goals_scored_average)
