@@ -219,13 +219,30 @@ def promoted_team():
     response_data = json.loads(response.text)["response"][0]["league"]["standings"][0]
 
     promoted_teams = []
-    playoff_teams = {}
     for team in response_data:
         if team["description"] == "Promotion":
             promoted_teams.append(team["team"]["name"])
 
     return promoted_teams
      
+def playoff_winner():
+    endpoint = "fixtures"
+    parameters = {
+        "league": 40,
+        "season": 2023,
+        "round": "Promotion Play-offs - Final"
+    }     
+
+    response = requests.get(url+endpoint, headers = {"x-apisports-key": API_key}, params = parameters)
+    response_data = json.loads(response.text)["response"][0]["teams"]
+
+    if response_data["home"]["winner"]:
+        promoted = response_data["home"]["name"]
+    elif response_data["away"]["winner"]:
+        promoted = response_data["away"]["name"]
+
+    return promoted
+
 def main():
     # Asks the user what two teams are playing
     team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
