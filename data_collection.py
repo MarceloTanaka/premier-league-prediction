@@ -209,6 +209,7 @@ def win_lose_draw_probability(goals_home_team_probability, goals_away_team_proba
 
     return home_win, draw, away_win
 
+# Make a list of the promoted teams
 def promoted_team(season):
     endpoint = "standings"
     parameters = {
@@ -226,6 +227,7 @@ def promoted_team(season):
 
     return promoted_teams
      
+# Get the team who was promoted to the Premier by playoffs
 def playoff_winner(season):
     endpoint = "fixtures"
     parameters = {
@@ -246,7 +248,8 @@ def playoff_winner(season):
         return teams["home"]["name"]
     else:
         return teams["away"]["name"]
-    
+
+# Asks the user what season they want to predict
 def ask_season():
     current_year = datetime.now().year
 
@@ -291,16 +294,16 @@ def main():
     # Calculating the home team's attacking/defensive strength
     if team1.lower() in [t.lower() for t in promoted_teams]:
         # Promoted home team: fixed strengths
-        team1_attacking_strength = 0.8/home_goals_scored_average
-        team1_defensive_strength = 1.0/home_goals_conceded_average
+        team1_attacking_strength = 0.95/home_goals_scored_average
+        team1_defensive_strength = 1.50/home_goals_conceded_average
     else:
         team1_attacking_strength, team1_defensive_strength = home_attacking_defensive_strength(team1_id, home_goals_scored_average, home_goals_conceded_average, season)
 
     # Calculating the away team's attacking/defensive strength
     if team2.lower() in [t.lower() for t in promoted_teams]:
         # Promoted away team: fixed strengths
-        team2_attacking_strength = 0.8/away_goals_scored_average
-        team2_defensive_strength = 1.0/away_goals_conceded_average
+        team2_attacking_strength = 0.95/away_goals_scored_average
+        team2_defensive_strength = 1.50/away_goals_conceded_average
     else:
         team2_attacking_strength, team2_defensive_strength = away_attacking_defensive_strength(team2_id, away_goals_scored_average, away_goals_conceded_average, season)
 
