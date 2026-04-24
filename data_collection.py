@@ -4,6 +4,7 @@ import requests
 import json
 import os
 from scipy.stats import poisson
+from datetime import datetime
 
 # General values (needed for all/most requests)
 API_key = "583c030f85fea127dc37854adb80d696"
@@ -245,11 +246,31 @@ def playoff_winner():
         return teams["home"]["name"]
     else:
         return teams["away"]["name"]
+    
+def ask_season():
+    current_year = datetime.now().year
+
+    while True:
+        season = input("Which season do you want to predict the match for? (Type only the first year, for example 2023 for the 2023/24 season): ")
+
+        if not season.isdigit():
+            print("The input you entered is not a valid number, please enter a year")
+            continue
+
+        season = int(season)
+
+        if 2023 <= season <= current_year:
+            return season
+
+        print(f"Please enter a year between 2023 and {current_year}")
 
 def main():
-    # Asks the user what two teams are playing
+    # Ask the user what two teams are playing
     team1 = input("Enter the name of the home team: ").title().rstrip().lstrip()
     team2 = input("Enter the name of the away team: ").title().rstrip().lstrip()
+
+    # Ask the user the season he wants to predict
+    season = ask_season()
 
     # Get each team's ID
     team1_id = team_id(team1)
