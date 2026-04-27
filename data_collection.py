@@ -1,4 +1,4 @@
-# File that collects the data from API-football 
+# File that collects the data from API-football and runs a poisson distribution to calculate the probability of a concrete score
 
 import requests
 import json
